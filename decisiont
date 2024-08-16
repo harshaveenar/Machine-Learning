@@ -1,0 +1,34 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+# Load the CSV file
+df = pd.read_csv('C:/Users/HP/Documents/ML/enjoysport.csv')
+
+# Use the correct column names
+X = df.drop('enjoysport', axis=1)
+y = df['enjoysport']
+
+# Convert categorical variables into dummy/indicator variables
+X = pd.get_dummies(X)
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create and train the decision tree classifier
+clf = DecisionTreeClassifier(criterion='entropy')
+clf.fit(X_train, y_train)
+
+# Export the decision tree rules
+tree_rules = export_text(clf, feature_names=X.columns.tolist())
+print("Decision Tree Rules:")
+print(tree_rules)
+
+# Calculate the accuracy on the test set
+accuracy = clf.score(X_test, y_test)
+print(f"\nAccuracy on test set: {accuracy:.2f}")
+
+# Predict the class for a new sample
+new_sample = pd.DataFrame([[0, 1, 0, 1, 0, 0, 1, 0, 0, 1]], columns=X.columns)
+predicted_class = clf.predict(new_sample)
+print(f"\nPredicted class for new sample: {predicted_class[0]}")
